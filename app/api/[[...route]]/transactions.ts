@@ -192,108 +192,109 @@ return c.json({error: "unauthorized"}, 401)
      
     return c.json({data})
     })
-.patch(
-    "/:id",
-    clerkMiddleware(),
+    .patch(
+        "/:id",
+        clerkMiddleware(),
         zValidator(
             "param",
-             z.object({
-            id: z.string().optional(),
-        })),
+            z.object({
+                id: z.string().optional(),
+            })
+        ),
         zValidator("json", insertTransactionSchema.omit({
             id: true
         })),
-         async(c)=> {
-            const auth = getAuth(c)
-            const {id} = c.req.valid("param")
-            const values = c.req.valid("json")
+        async (c) => {
+            const auth = getAuth(c);
+            const { id } = c.req.valid("param");
+            const values = c.req.valid("json");
     
-            if(!id){
-                return c.json({error: "Missing Id"}, 400)
-                
+            if (!id) {
+                return c.json({ error: "Missing Id" }, 400);
             }
-            if(!auth?.userId){
-                return c.json({error: "unauthorized"}, 401)
+            if (!auth?.userId) {
+                return c.json({ error: "unauthorized" }, 401);
             }
-           
+    
             const transactionToUpdate = db.$with("transaction_to_Edit").as(
-                db.select({id: transactions.id}).from(transactions)
-                .innerJoin(accounts, eq(transactions.accountId, accounts.id))
-                .where(
-                    and(
-                        eq(transactions.id, id),
-                        eq(accounts.userId, auth.userId),
+                db.select({ id: transactions.id }).from(transactions)
+                    .innerJoin(accounts, eq(transactions.accountId, accounts.id))
+                    .where(
+                        and(
+                            eq(transactions.id, id),
+                            eq(accounts.userId, auth.userId)
+                        )
                     )
-                )
-              )
-
-        const [data] = await db
-        .with(transactionToUpdate)
-        .update(transactions)
-        .set(values)
-        .where(
-            inArray(transactions.id, sql`(select id from ${transactionToUpdate})`)
-        )
-        .returning()
-      
-        if(!data){
-            return c.json({error: "Account Not Found"}, 400)
-             }
+            );
     
-        return c.json({data})
-    })
-.delete(
-    "/:id",
-    clerkMiddleware(),
+            const [data] = await db
+                .with(transactionToUpdate)
+                .update(transactions)
+                .set(values)
+                .where(
+                    inArray(transactions.id, sql`(SELECT id FROM ${transactionToUpdate})`)
+                )
+                .returning();
+    
+            if (!data) {
+                return c.json({ error: "Account Not Found" }, 400);
+            }
+    
+            return c.json({ data });
+        }
+    ) 
+    .delete(
+        "/:id",
+        clerkMiddleware(),
         zValidator(
             "param",
-             z.object({
-            id: z.string().optional(),
-        })),
-         async(c)=> {
-            const auth = getAuth(c)
-            const {id} = c.req.valid("param")
-          
+            z.object({
+                id: z.string().optional(),
+            })
+        ),
+        async (c) => {
+            const auth = getAuth(c);
+            const { id } = c.req.valid("param");
     
-            if(!id){
-                return c.json({error: "Missing Id"}, 400)
-                
+            if (!id) {
+                return c.json({ error: "Missing Id" }, 400);
             }
-            if(!auth?.userId){
-                return c.json({error: "unauthorized"}, 401)
+            if (!auth?.userId) {
+                return c.json({ error: "unauthorized" }, 401);
             }
-
-            const transactionToDelete = db.$with("transaction_to_Delete").as(
-                db.select({id: transactions.id}).from(transactions)
-                .innerJoin(accounts, eq(transactions.accountId, accounts.id))
+    
+            const transactionToDelete = db.$with("transaction_to_delete").as(
+                db.select({ id: transactions.id }).from(transactions)
+                    .innerJoin(accounts, eq(transactions.accountId, accounts.id))
+                    .where(
+                        and(
+                            eq(transactions.id, id),
+                            eq(accounts.userId, auth.userId)
+                        )
+                    )
+            );
+    
+            const [data] = await db
+                .with(transactionToDelete)
+                .delete(transactions)
                 .where(
-                    and(
-                        eq(transactions.id, id),
-                        eq(accounts.userId, auth.userId),
+                    inArray(
+                        transactions.id,
+                        sql`(SELECT id FROM ${transactionToDelete})`
                     )
                 )
-              )
-           
-            
-        const [data] = await db
-             .with(transactionToDelete)
-             .delete(transactions)
-             .where(
-                inArray(
-                    transactions.id,
-                    sql`select id from ${transactionToDelete}`
-                )
-                
-             )
-             .returning({
-                id: transactions.id
-             })
-
-        if(!data){
-            return c.json({error: "Transaction Not Found"}, 400)
-             }
+                .returning({
+                    id: transactions.id
+                });
     
-        return c.json({data})
-    })
+            if (!data) {
+                return c.json({ error: "Transaction Not Found" }, 400);
+            }
+    
+            return c.json({ data });
+        }
+    )
+    
+    
 
 export default app
