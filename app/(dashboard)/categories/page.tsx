@@ -12,7 +12,6 @@ import { columns} from "./colums"
 import { DataTable } from "@/components/data-table"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useNewCategory } from "@/features/categories/hooks/use-new-category"
-import { useGetCategory } from "@/features/categories/api/use-get-category"
 import { useBulkDeleteCategories } from "@/features/categories/api/use-bult-delete-categories"
 import { usegetCategories } from "@/features/categories/api/use-get-categories"
 

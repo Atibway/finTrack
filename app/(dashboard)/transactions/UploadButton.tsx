@@ -20,7 +20,6 @@ onUpload
     >
       {({
         getRootProps,
-        ProgressBar,
       }: any) => (
         <>
             <Button 

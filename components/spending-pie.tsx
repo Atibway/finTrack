@@ -5,9 +5,7 @@ import {
     CardHeader, 
     CardTitle
  } from "./ui/card";
-import { AreaVariant } from "./AreaVariant";
-import { BarVariant } from "./bar-variant";
-import { LineVariant } from "./line-variant";
+
 import { useState } from "react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 import { PieVariant } from "./pie-variant";
