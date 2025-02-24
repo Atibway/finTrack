@@ -6,7 +6,7 @@ import {
     CardHeader,
     CardTitle,
   } from "@/components/ui/card"
-  import { transactions as transactionShema } from "@/db/schema"
+  import { transactions as transactionSchema} from "@/db/schema"
 import { Loader2, Plus } from "lucide-react"
 import { columns} from "./colums"
 import { DataTable } from "@/components/data-table"
@@ -17,6 +17,9 @@ import { usegetTransactions } from "@/features/transactions/api/use-get-transact
 import { useState } from "react"
 import { ImportCard } from "./ImportCard"
 import { UploadButton } from "./UploadButton"
+import { useSelectAccount } from "@/features/accounts/hooks/use-select-account"
+import { toast } from "sonner"
+import { useBulkCreateTransactions } from "@/features/transactions/api/use-bult-create-transactions"
 
 enum VARIANTS {
   LIST = "LIST",
@@ -30,6 +33,7 @@ const INITIAL_IMPORT_RESULTS = {
 }
 
 const TransactionsPage = () => {
+  const [AccountDialog, confirm] = useSelectAccount()
   const [variant, setVariant] = useState<VARIANTS>(VARIANTS.LIST)
    const [importResults, setImportResults] = useState(INITIAL_IMPORT_RESULTS);
 
@@ -47,16 +51,33 @@ const TransactionsPage = () => {
 
     const newTransaction = useNewTransaction()
     const deleteTransactions = useBulkDeleteTransactions();
+    const createTransactions = useBulkCreateTransactions()
     const transactionsQuery = usegetTransactions()
     const transactions = transactionsQuery.data || []
 
     const isDisabled = transactionsQuery.isLoading || deleteTransactions.isPending
 
-    const onsubmitImport = async (
-values: typeof transactionShema.$inferInsert[]
-    )=> {
-
-    }
+    const onSubmitImport = async (
+      values: typeof transactionSchema.$inferInsert[],
+    ) => {
+      const accountId = await confirm();
+    
+      if (!accountId) {
+        return toast.error("Please select an account to continue.");
+      }
+    
+      const data = values.map((value) => ({
+        ...value,
+        accountId: accountId as string,
+      }));
+      
+      createTransactions.mutate(data, {
+        onSuccess: ()=> {
+          onCancelImport();
+        }
+      })
+    };
+    
 
     if(transactionsQuery.isLoading){
 return (
@@ -79,13 +100,12 @@ return (
     if(variant === VARIANTS.IMPORT){
 return (
   <>
-  <div>
+    <AccountDialog/>
   <ImportCard
   data={importResults.data}
   onCancel={onCancelImport}
-  onSubmit={onsubmitImport}
+  onSubmit={onSubmitImport}
   />
-  </div>
   </>
 )
     }

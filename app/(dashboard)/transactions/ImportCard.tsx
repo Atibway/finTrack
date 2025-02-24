@@ -104,8 +104,7 @@ value = null
           date: format(parse(item.date, dateFormat, new Date()), outputFormat)
         }))
         
-        console.log({formatedData});
-        
+      onSubmit(formatedData)
       }
 
     return (
@@ -114,6 +113,7 @@ value = null
         <CardHeader className="gap-y-2 lg:flex-row lg:items-center lg:justify-between">
           <CardTitle className="text-xl line-clamp-1">Import Transaction</CardTitle>
           <div className="flex flex-col lg:flex-row gap-y-2 items-center gap-x-2">
+        
           <Button
           onClick={onCancel}
            size="sm"
