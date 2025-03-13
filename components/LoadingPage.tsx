@@ -1,9 +1,8 @@
-"use client"
+"use client";
 
 import React from "react";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
-
 interface LoadingPageProps {
   message?: string;
   className?: string;
@@ -11,16 +10,16 @@ interface LoadingPageProps {
 
 const LoadingPage = ({ message = "Loading...", className }: LoadingPageProps) => {
   const [progress, setProgress] = React.useState(13);
-  
+
   React.useEffect(() => {
     const timer = setTimeout(() => {
       setProgress(66);
     }, 500);
-    
+
     const timer2 = setTimeout(() => {
       setProgress(100);
     }, 1000);
-    
+
     return () => {
       clearTimeout(timer);
       clearTimeout(timer2);
@@ -33,7 +32,7 @@ const LoadingPage = ({ message = "Loading...", className }: LoadingPageProps) =>
       "transition-opacity duration-300 ease-in-out",
       className
     )}>
-      <div className="w-full max-w-md px-8 flex flex-col items-center">
+      <div className="w-full max-w-md px-8 flex flex-col z-50 items-center">
         <div className="relative w-24 h-24 mb-8">
           <div className="absolute inset-0 rounded-full border-t-2 border-primary opacity-20 animate-spin"></div>
           <div className="absolute inset-0 flex items-center justify-center">

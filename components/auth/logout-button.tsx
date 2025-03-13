@@ -25,18 +25,14 @@ const onClick = ()=> {
     })
 };
 
-if(loading){
 
-    return (
-        <>
-        {loading && <LoadingPage message="Signing you out..." />}
-        </>
-    )
-}
 
 return (
-    <span onClick={onClick} className="curser-pointer">
-        {children}
+    <>
+    {loading && <LoadingPage message="Signing you out..." />}
+    <span onClick={onClick} className="cursor-pointer">
+      {children}
     </span>
+  </>
 )
 }
