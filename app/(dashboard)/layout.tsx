@@ -4,7 +4,6 @@ import TopBar from "@/components/layout/TopBar";
 import { currentUser } from "@/lib/auth";
 import { redirect } from "next/navigation";
 
-
 type Props ={
     children: React.ReactNode;
 }
