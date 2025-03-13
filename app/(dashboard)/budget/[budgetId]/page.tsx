@@ -29,7 +29,7 @@ import { useGetCategory } from "@/features/categories/api/use-get-category";
 import BudgetDetailSkeleton from "./BudgetDetailSkeleton";
 
 
-const BudgetDetail = ({params}: {params: {id: string}}) => {
+const BudgetDetail = ({params}: {params: {budgetId: string}}) => {
 
   const router = useRouter();
   
@@ -44,12 +44,12 @@ const BudgetDetail = ({params}: {params: {id: string}}) => {
     isLoading, 
     error
   } = useQuery({
-    queryKey: ["budgetItems", params.id],
+    queryKey: ["budgetItems", params.budgetId],
     queryFn: async () => {
-      if (!params.id) throw new Error("Budget ID is required");
-      return fetchBudgetItems(params.id);
+      if (!params.budgetId) throw new Error("Budget ID is required");
+      return fetchBudgetItems(params.budgetId);
     },
-    enabled: !!params.id,
+    enabled: !!params.budgetId,
   });
   
   // Fetch budget details
@@ -58,20 +58,20 @@ const BudgetDetail = ({params}: {params: {id: string}}) => {
     isLoading: isLoadingBudget, 
     error: budgetError 
   } = useQuery({
-    queryKey: ["budget", params.id],
+    queryKey: ["budget", params.budgetId],
     queryFn: async () => {
-      if (!params.id) throw new Error("Budget params.id is required");
-      return fetchBudget(params.id);
+      if (!params.budgetId) throw new Error("Budget params.budgetId is required");
+      return fetchBudget(params.budgetId);
     },
-    enabled: !!params.id,
+    enabled: !!params.budgetId,
   });
   
   const categoryQuery = useGetCategory(budget?.categoryId ?? undefined);
   // Delete budget mutation
   const deleteBudgetMutation = useMutation({
     mutationFn: async () => {
-      if (!params.id) throw new Error("Budget params.id is required");
-      return deleteBudget(params.id);
+      if (!params.budgetId) throw new Error("Budget params.budgetId is required");
+      return deleteBudget(params.budgetId);
     },
     onSuccess: () => {
       toast.success("Budget deleted successfully");
@@ -140,7 +140,7 @@ const BudgetDetail = ({params}: {params: {id: string}}) => {
     <>
     <DeleteBudgetItemDialog
       item={selectedItem}
-       budgetId = {params.id}
+       budgetId = {params.budgetId}
        showDeleteBudgetItemDialog = {showDeleteBudgetItemDialog}
         setShowDeleteBudgetItemDialog = {setShowDeleteBudgetItemDialog}
       />
