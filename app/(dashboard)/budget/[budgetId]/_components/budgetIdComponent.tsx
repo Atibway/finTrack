@@ -26,7 +26,8 @@ import { useRouter } from "next/navigation";
 import DeleteBudgetItemDialog from "./delete-budget-item-dialog";
 import CreateBudgetForm from "@/components/Budget/CreateBudgetForm";
 import { useGetCategory } from "@/features/categories/api/use-get-category";
-import BudgetDetailSkeleton from "./BudgetDetailSkeleton";
+import BudgetDetailSkeleton from "./BudgetDetailSkeleton copy 2";
+
 
 
 export const BudgetDetailComponent = ({
