@@ -7,7 +7,7 @@ import summary from './summary';
 import currency from './currency';
 
 const app = new Hono().basePath('/api');
-export const runtime = 'edge';
+// export const runtime = 'edge';
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 const routes = app
