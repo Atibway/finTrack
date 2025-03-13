@@ -1,14 +1,11 @@
-// import { BudgetDetailComponent } from "./budgetIdComponent"
+import { BudgetDetailComponent } from "./budgetIdComponent"
 
-const page = async () => {
+const page = async ({params}: {params: {budgetId: string}}) => {
   return (
     <>
-    {/* <BudgetDetailComponent 
+    <BudgetDetailComponent 
     id={params.budgetId}
-    /> */}
-    <div>
-      Hello
-    </div>
+    />
     </>
   )
 }
