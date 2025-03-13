@@ -1,4 +1,4 @@
-import { BudgetDetailComponent } from "./budgetIdComponent"
+// import { BudgetDetailComponent } from "./budgetIdComponent"
 
 const page = async ({params}: {params: {budgetId: string}}) => {
   return (
