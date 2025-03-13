@@ -3,9 +3,12 @@ import { BudgetDetailComponent } from "./budgetIdComponent"
 const page = async ({params}: {params: {budgetId: string}}) => {
   return (
     <>
-    <BudgetDetailComponent 
+    {/* <BudgetDetailComponent 
     id={params.budgetId}
-    />
+    /> */}
+    <div>
+      Hello
+    </div>
     </>
   )
 }
