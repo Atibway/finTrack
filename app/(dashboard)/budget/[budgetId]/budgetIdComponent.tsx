@@ -29,7 +29,11 @@ import { useGetCategory } from "@/features/categories/api/use-get-category";
 import BudgetDetailSkeleton from "./BudgetDetailSkeleton";
 
 
-export const BudgetDetailComponent = ({id:string}) => {
+export const BudgetDetailComponent = ({
+    id
+}:{
+id: string
+}) => {
 
   const router = useRouter();
   
