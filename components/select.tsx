@@ -34,7 +34,7 @@ return options.find((option)=> option?.value === value)
    return (
     <CreateableSelect
     placeholder={placeholder}
-    className="text-sm h-10"
+    className="text-sm h-10 text-black "
     styles={{
       control: (base) => ({
         ...base,

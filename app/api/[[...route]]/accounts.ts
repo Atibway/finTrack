@@ -1,20 +1,20 @@
 import { db } from "@/db/drizzle"
 import { accounts, insertAccountSchema } from "@/db/schema"
-import { clerkMiddleware, getAuth } from "@hono/clerk-auth"
 import { and, eq, inArray } from "drizzle-orm"
 import {createId} from "@paralleldrive/cuid2"
 import {Hono} from "hono"
 import {zValidator} from "@hono/zod-validator"
 import { z } from "zod"
+import { currentUser } from "@/lib/auth"
 
 const app = new Hono()
 .get("/",
-    clerkMiddleware(),
+   
      async(c)=> {
-        const auth = getAuth(c)
+        const auth = await currentUser()
         
 
-        if(!auth?.userId){
+        if(!auth?.id){
        return c.json({error: "unauthorized"}, 401)
         }
         
@@ -23,7 +23,7 @@ const app = new Hono()
         name: accounts.name
     })
     .from(accounts)
-    .where(eq(accounts.userId, auth.userId))
+    .where(eq(accounts.userId, auth.id))
 
     return c.json({data})
 })
@@ -31,15 +31,15 @@ const app = new Hono()
     zValidator("param", z.object({
         id: z.string().optional(),
     })),
-    clerkMiddleware(),
+   
      async(c)=> {
-        const auth = getAuth(c)
+        const auth = await currentUser()
         const {id} = c.req.valid("param")
 
         if(!id){
        return c.json({error: "Missing Id"}, 400)
         }
-        if(!auth?.userId){
+        if(!auth?.id){
        return c.json({error: "unauthorized"}, 401)
         }
         
@@ -50,7 +50,7 @@ const app = new Hono()
     .from(accounts)
     .where(
        and(
-        eq(accounts.userId, auth.userId),
+        eq(accounts.userId, auth.id),
         eq(accounts.id, id)
        )
     )
@@ -63,21 +63,21 @@ const app = new Hono()
 })
 .post(
     "/",
-    clerkMiddleware(),
+   
     zValidator("json", insertAccountSchema.pick({
         name: true
     })),
     async (c)=> {
-      const auth = getAuth(c);
+      const auth = await currentUser();
       const values = c.req.valid("json")
 
-      if(!auth?.userId){
+      if(!auth?.id){
 return c.json({error: "unauthorized"}, 401)
       }
 
       const [data] = await db.insert(accounts).values({
         id: createId(),
-        userId: auth.userId,
+        userId: auth.id,
         ...values
       }).returning();
 
@@ -85,17 +85,17 @@ return c.json({error: "unauthorized"}, 401)
     })
 .post(
     "/bulk-delete",
-    clerkMiddleware(),
+   
     zValidator("json",
         z.object({
             ids: z.array(z.string())
         })
      ),
     async (c)=> {
-      const auth = getAuth(c);
+      const auth = await currentUser();
       const values = c.req.valid("json")
 
-      if(!auth?.userId){
+      if(!auth?.id){
 return c.json({error: "unauthorized"}, 401)
       }
 
@@ -103,7 +103,7 @@ return c.json({error: "unauthorized"}, 401)
       .delete(accounts)
        .where(
         and(
-            eq(accounts.userId, auth.userId),
+            eq(accounts.userId, auth.id),
             inArray(accounts.id, values.ids)
         )
        )
@@ -114,7 +114,7 @@ return c.json({error: "unauthorized"}, 401)
     })
 .patch(
     "/:id",
-    clerkMiddleware(),
+   
         zValidator(
             "param",
              z.object({
@@ -124,7 +124,7 @@ return c.json({error: "unauthorized"}, 401)
             name: true
         })),
          async(c)=> {
-            const auth = getAuth(c)
+            const auth = await currentUser()
             const {id} = c.req.valid("param")
             const values = c.req.valid("json")
     
@@ -132,7 +132,7 @@ return c.json({error: "unauthorized"}, 401)
                 return c.json({error: "Missing Id"}, 400)
                 
             }
-            if(!auth?.userId){
+            if(!auth?.id){
                 return c.json({error: "unauthorized"}, 401)
             }
            
@@ -142,7 +142,7 @@ return c.json({error: "unauthorized"}, 401)
         .set(values)
         .where(
             and(
-                eq(accounts.userId, auth.userId),
+                eq(accounts.userId, auth.id),
                 eq(accounts.id, id)
             )
         ).returning()
@@ -155,14 +155,13 @@ return c.json({error: "unauthorized"}, 401)
     })
 .delete(
     "/:id",
-    clerkMiddleware(),
         zValidator(
             "param",
              z.object({
             id: z.string().optional(),
         })),
          async(c)=> {
-            const auth = getAuth(c)
+            const auth = await currentUser()
             const {id} = c.req.valid("param")
           
     
@@ -170,7 +169,7 @@ return c.json({error: "unauthorized"}, 401)
                 return c.json({error: "Missing Id"}, 400)
                 
             }
-            if(!auth?.userId){
+            if(!auth?.id){
                 return c.json({error: "unauthorized"}, 401)
             }
            
@@ -179,7 +178,7 @@ return c.json({error: "unauthorized"}, 401)
         .delete(accounts)
         .where(
             and(
-                eq(accounts.userId, auth.userId),
+                eq(accounts.userId, auth.id),
                 eq(accounts.id, id)
             )
         ).returning({

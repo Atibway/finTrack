@@ -1,5 +1,4 @@
 import { db } from "@/db/drizzle"
-import { clerkMiddleware, getAuth } from "@hono/clerk-auth"
 import { and, eq, gte, inArray, lte, desc, sql } from "drizzle-orm"
 import {createId} from "@paralleldrive/cuid2"
 import {Hono} from "hono"
@@ -7,6 +6,7 @@ import {zValidator} from "@hono/zod-validator"
 import { z } from "zod"
 import {parse, subDays} from "date-fns"
 import { accounts, categories, insertTransactionSchema, transactions } from "@/db/schema"
+import { currentUser } from "@/lib/auth"
 
 const app = new Hono()
 .get("/",
@@ -15,12 +15,11 @@ const app = new Hono()
         to: z.string().optional(),
         accountId: z.string().optional()
     })),
-    clerkMiddleware(),
      async(c)=> {
-        const auth = getAuth(c)
+        const auth = await currentUser()
         const {from, to, accountId} = c.req.valid("query")
 
-        if(!auth?.userId){
+        if(!auth?.id){
        return c.json({error: "unauthorized"}, 401)
         }
 
@@ -51,7 +50,7 @@ const app = new Hono()
     .where(
         and(
             accountId? eq(transactions.accountId, accountId) : undefined,
-            eq(accounts.userId, auth.userId),
+            eq(accounts.userId, auth.id),
             gte(transactions.date, startDate),
             lte(transactions.date, endDate),
         )
@@ -64,15 +63,14 @@ const app = new Hono()
     zValidator("param", z.object({
         id: z.string().optional(),
     })),
-    clerkMiddleware(),
      async(c)=> {
-        const auth = getAuth(c)
+        const auth = await currentUser()
         const {id} = c.req.valid("param")
 
         if(!id){
        return c.json({error: "Missing Id"}, 400)
         }
-        if(!auth?.userId){
+        if(!auth?.id){
        return c.json({error: "unauthorized"}, 401)
         }
         
@@ -90,7 +88,7 @@ const app = new Hono()
     .where(
        and(
         eq(transactions.id, id),
-        eq(accounts.userId, auth.userId)
+        eq(accounts.userId, auth.id)
        )
     )
 
@@ -102,15 +100,14 @@ const app = new Hono()
 })
 .post(
     "/",
-    clerkMiddleware(),
     zValidator("json", insertTransactionSchema.omit({
         id: true
     })),
     async (c)=> {
-      const auth = getAuth(c);
+      const auth = await currentUser();
       const values = c.req.valid("json")
 
-      if(!auth?.userId){
+      if(!auth?.id){
 return c.json({error: "unauthorized"}, 401)
       }
 
@@ -123,7 +120,7 @@ return c.json({error: "unauthorized"}, 401)
     })
     .post(
         "/bulk-create",
-        clerkMiddleware(),
+
         zValidator(
             "json",
             z.array(
@@ -133,10 +130,10 @@ return c.json({error: "unauthorized"}, 401)
             )
         ),
         async(c)=> {
-            const auth = getAuth(c);
+            const auth = await currentUser();
             const values = c.req.valid("json")
       
-            if(!auth?.userId){
+            if(!auth?.id){
       return c.json({error: "unauthorized"}, 401)
             }
 
@@ -155,17 +152,16 @@ return c.json({error: "unauthorized"}, 401)
     )
 .post(
     "/bulk-delete",
-    clerkMiddleware(),
     zValidator("json",
         z.object({
             ids: z.array(z.string())
         })
      ),
     async (c)=> {
-      const auth = getAuth(c);
+      const auth = await currentUser();
       const values = c.req.valid("json")
 
-      if(!auth?.userId){
+      if(!auth?.id){
 return c.json({error: "unauthorized"}, 401)
       }
 
@@ -175,7 +171,7 @@ return c.json({error: "unauthorized"}, 401)
         .where(
             and(
                 inArray(transactions.id, values.ids),
-                eq(accounts.userId, auth.userId),
+                eq(accounts.userId, auth.id),
             )
         )
       )
@@ -194,7 +190,7 @@ return c.json({error: "unauthorized"}, 401)
     })
     .patch(
         "/:id",
-        clerkMiddleware(),
+
         zValidator(
             "param",
             z.object({
@@ -205,14 +201,14 @@ return c.json({error: "unauthorized"}, 401)
             id: true
         })),
         async (c) => {
-            const auth = getAuth(c);
+            const auth = await currentUser();
             const { id } = c.req.valid("param");
             const values = c.req.valid("json");
     
             if (!id) {
                 return c.json({ error: "Missing Id" }, 400);
             }
-            if (!auth?.userId) {
+            if (!auth?.id) {
                 return c.json({ error: "unauthorized" }, 401);
             }
     
@@ -222,7 +218,7 @@ return c.json({error: "unauthorized"}, 401)
                     .where(
                         and(
                             eq(transactions.id, id),
-                            eq(accounts.userId, auth.userId)
+                            eq(accounts.userId, auth.id)
                         )
                     )
             );
@@ -245,7 +241,7 @@ return c.json({error: "unauthorized"}, 401)
     ) 
     .delete(
         "/:id",
-        clerkMiddleware(),
+
         zValidator(
             "param",
             z.object({
@@ -253,13 +249,13 @@ return c.json({error: "unauthorized"}, 401)
             })
         ),
         async (c) => {
-            const auth = getAuth(c);
+            const auth = await currentUser();
             const { id } = c.req.valid("param");
     
             if (!id) {
                 return c.json({ error: "Missing Id" }, 400);
             }
-            if (!auth?.userId) {
+            if (!auth?.id) {
                 return c.json({ error: "unauthorized" }, 401);
             }
     
@@ -269,7 +265,7 @@ return c.json({error: "unauthorized"}, 401)
                     .where(
                         and(
                             eq(transactions.id, id),
-                            eq(accounts.userId, auth.userId)
+                            eq(accounts.userId, auth.id)
                         )
                     )
             );

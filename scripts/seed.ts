@@ -15,7 +15,7 @@ const db = drizzle(sql);
 
 
 
-const SEED_USER_ID = 'user_2synoDR748rBYfgXtMH3wl12emL';
+const SEED_USER_ID = '23105142-ca89-4d56-8eeb-e67de4d98c3a';
 const SEED_CATEGORIES = [
     { id: "category_1", name: "Food", userId: SEED_USER_ID, plaidId: null },
     { id: "category_2", name: "Rent", userId: SEED_USER_ID, plaidId: null },

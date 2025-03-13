@@ -14,12 +14,13 @@ return Math.round(amount * 1000)
 }
 
 export function formatCurrency(value: number){
-return Intl.NumberFormat("en-US", {
+return Intl.NumberFormat("en-UG", {
   style: "currency",
-  currency:"USD",
-  minimumFractionDigits: 2,
+  currency:"UGX",
+  minimumFractionDigits: 0,
 }).format(value)
 }
+
 
 export function calculatePercentageChange(
   current: number,
@@ -104,4 +105,43 @@ export function formatPercentage(
 
   return result;
 }
+
+import { BudgetItem} from "./types";
+
+
+
+// export function formatCurrency(amount: number): string {
+//   return new Intl.NumberFormat('en-US', {
+//     style: 'currency',
+//     currency: 'USD',
+//     minimumFractionDigits: 0,
+//     maximumFractionDigits: 0,
+//   }).format(amount);
+// }
+
+export function formatDate(dateString: string): string {
+  const date = new Date(dateString);
+  return new Intl.DateTimeFormat('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  }).format(date);
+}
+
+export function calculateBudgetSummary(totalBudget: number, items: BudgetItem[]) {
+  const totalSpent = items.reduce((sum, item) => sum + item.amount, 0);
+  const remaining = totalBudget - totalSpent;
+  const percentUtilized = totalBudget > 0 ? (totalSpent / totalBudget) * 100 : 0;
+  
+  return {
+    totalBudget,
+    totalSpent,
+    remaining,
+    percentUtilized: Math.min(percentUtilized, 100) // Cap at 100%
+  };
+}
+
+
+
+
 

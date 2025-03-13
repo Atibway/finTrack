@@ -1,27 +1,40 @@
 
-import { DataGrid } from "@/components/data-grid";
-import { DataCharts } from "@/components/DataCharts";
-import { Filters } from "@/components/Filters";
-import { Suspense } from "react";
+import { Suspense} from "react";
+import LoadingPage from "./HomeLoading";
 
- const  DashboardPage = ()=> {
-  return (
-    <div className="max-w-screen-2xl mx-auto w-full pb-10 -mt-28">
-      <div className="mb-10">
-          <Filters />
-      </div>
-      <DataGrid />
-      <DataCharts />
-    </div>
-  );
-}
+import { DashboardPage } from "./Dashboardpage";
 
-const HomePage = () => {
+
+const HomePage = async() => {
+
+
   return (
-  <Suspense fallback={<div>Loading filters...</div>}>
+  <Suspense fallback={<LoadingPage/>}>
     <DashboardPage/>
   </Suspense>
   )
 }
 
 export default HomePage;
+
+// import { useCurrentUser } from "@/hooks/use-current-user";
+// import { useStoreModel } from "@/hooks/use-store-model";
+// import { useRouter } from "next/navigation";
+// import { useEffect } from "react";
+
+// export default function SetupPage() {
+
+//   const user = useCurrentUser()
+// const router = useRouter()
+
+//     const onOpen = useStoreModel((state) => state.onOpen);
+//     const isOpen = useStoreModel((state) => state.isOpen);
+    
+//     useEffect(() => {
+//       if (!isOpen) {
+//         onOpen();
+//       }
+//     }, [isOpen, onOpen]);
+//     return null;
+ 
+// }

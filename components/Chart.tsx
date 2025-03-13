@@ -7,7 +7,7 @@ import {
  } from "./ui/card";
 import { AreaVariant } from "./AreaVariant";
 import { BarVariant } from "./bar-variant";
-import { LineVariant } from "./line-variant";
+import { LineVariant } from "./charts/line-variant";
 import { useState } from "react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 import { Skeleton } from "./ui/skeleton";

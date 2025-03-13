@@ -4,7 +4,7 @@ import accounts from './accounts';
 import categories from './categories';
 import transactions from './transactions';
 import summary from './summary';
-
+import currency from './currency';
 
 const app = new Hono().basePath('/api');
 export const runtime = 'edge';
@@ -14,8 +14,9 @@ const routes = app
   .route('/accounts', accounts)
   .route('/categories', categories)
   .route('/transactions', transactions)
-  .route('/summary', summary);
-/* eslint-enable @typescript-eslint/no-unused-vars */
+  .route('/summary', summary)
+  .route('/currency', currency)
+  /* eslint-enable @typescript-eslint/no-unused-vars */
 
 
 export const GET = handle(app);

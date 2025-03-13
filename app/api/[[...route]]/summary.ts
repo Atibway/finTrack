@@ -1,8 +1,8 @@
 
 import { db } from "@/db/drizzle";
 import { accounts, categories, transactions } from "@/db/schema";
+import { currentUser } from "@/lib/auth";
 import { calculatePercentageChange, fillMissingDays } from "@/lib/utils";
-import { clerkMiddleware, getAuth } from "@hono/clerk-auth";
 import { zValidator } from "@hono/zod-validator";
 import { differenceInDays, parse, subDays } from "date-fns";
 import { and, desc, eq, gte, lt, lte, sql, sum } from "drizzle-orm";
@@ -12,7 +12,6 @@ import { z } from "zod";
 const app = new Hono()
   .get(
     "/",
-    clerkMiddleware(),
     zValidator(
         "query",
         z.object({
@@ -22,10 +21,10 @@ const app = new Hono()
         })
     ),
     async (c) => {
-        const auth = getAuth(c)
+        const auth = await currentUser()
         const {from, to, accountId} = c.req.valid("query")
        
-        if(!auth?.userId){
+        if(!auth?.id){
             return c.json({error: "unauthorized"}, 401)
         }
 
@@ -68,12 +67,12 @@ const app = new Hono()
       
 
       const [currentPeriod] = await fetchFinancialData(
-        auth.userId,
+        auth.id,
         startDate,
         endDate
       )
       const [lastPeriod] = await fetchFinancialData(
-        auth.userId,
+        auth.id,
         lastPeriodStart,
         lastPeriodEnd
       )
@@ -114,7 +113,7 @@ const app = new Hono()
   .where(
     and(
         accountId? eq(transactions.accountId, accountId) : undefined,
-        eq(accounts.userId, auth.userId),
+        eq(accounts.userId, auth.id),
         lt(transactions.amount, 0),
         gte(transactions.date, startDate),
         lte(transactions.date, endDate),
@@ -157,7 +156,7 @@ const activeDays = await db
   .where(
     and(
         accountId? eq(transactions.accountId, accountId) : undefined,
-        eq(accounts.userId, auth.userId),
+        eq(accounts.userId, auth.id),
         gte(transactions.date, startDate),
         lte(transactions.date, endDate),
     )
