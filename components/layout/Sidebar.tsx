@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import { cn } from "@/lib/utils";
 import {
   LayoutDashboard,
@@ -19,9 +19,15 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import HeaderLogo from "../HeaderLogo";
 import { LogoutButton } from "../auth/logout-button";
-
-const Sidebar = () => {
-  const [collapsed, setCollapsed] = useState(false);
+interface SidebarProps {
+  collapsed: boolean;
+  setCollapsed: Dispatch<SetStateAction<boolean>>
+}
+const Sidebar = ({
+collapsed,
+setCollapsed
+}:SidebarProps) => {
+ 
   const pathName = usePathname();
 
   const menuItems = [
