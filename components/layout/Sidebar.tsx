@@ -38,7 +38,7 @@ const Sidebar = () => {
   return (
     <div
       className={cn(
-        "h-screen bg-card hidden border-r border-border transition-all duration-300 md:flex flex-col justify-between",
+        "fixed z-50 h-screen bg-card hidden border-r border-border transition-all duration-300 md:flex flex-col justify-between",
         collapsed ? "w-[70px]" : "w-[250px]"
       )}
     >
