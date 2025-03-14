@@ -2,8 +2,9 @@ import React from 'react';
 import { Table, TableBody, TableCell, TableHeader, TableHead, TableRow } from '@/components/ui/table';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { formatCurrency, Transaction } from './reportUtils';
+import { Transaction } from './reportUtils';
 import { format } from 'date-fns';
+import { formatCurrency } from '@/lib/utils';
 
 interface TransactionPreviewProps {
   transactions: Transaction[];
