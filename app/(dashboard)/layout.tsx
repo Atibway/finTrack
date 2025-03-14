@@ -17,7 +17,7 @@ const layout = async ({ children }: Props) => {
     <>
       <div className="min-h-screen flex">
         <Sidebar />
-        <div className="flex-1 flex flex-col ml-[250px]"> {/* Adjust the margin-left to match the sidebar width */}
+        <div className={`flex-1 flex flex-col transition-all duration-300 ml-[250px] md:ml-[70px]`}> {/* Adjust the margin-left to match the sidebar width */}
           <TopBar />
           <main className="flex-1 p-3">
             {children}
