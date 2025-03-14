@@ -22,20 +22,15 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 import { PlusIcon, TrashIcon, AlertCircle, Edit3Icon, PencilIcon } from "lucide-react";
-import { useRouter } from "next/navigation";
+import {  useRouter, useSearchParams } from "next/navigation";
 import DeleteBudgetItemDialog from "./delete-budget-item-dialog";
 import CreateBudgetForm from "@/components/Budget/CreateBudgetForm";
 import { useGetCategory } from "@/features/categories/api/use-get-category";
 import BudgetDetailSkeleton from "./BudgetDetailSkeleton copy 2";
 
-
-
-export const BudgetDetailComponent = ({
-    id
-}:{
-id: string
-}) => {
-
+export const BudgetDetailComponent = () => {
+  const params = useSearchParams();
+  const id = params.get("id")
   const router = useRouter();
   
   const [showItemForm, setShowItemForm] = useState(false);
@@ -145,7 +140,7 @@ id: string
     <>
     <DeleteBudgetItemDialog
       item={selectedItem}
-       budgetId = {id}
+       budgetId = {id as string}
        showDeleteBudgetItemDialog = {showDeleteBudgetItemDialog}
         setShowDeleteBudgetItemDialog = {setShowDeleteBudgetItemDialog}
       />

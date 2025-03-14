@@ -46,8 +46,9 @@ const BudgetCard = ({ budget, className }: BudgetCardProps) => {
       </CardContent>
       
       <CardFooter className="p-4 pt-0 flex justify-end">
+
         <Link
-          href={`/budget/${budget.id}`}
+          href={`/budget/budgetId?id=${budget.id}`}
           className="flex items-center text-sm font-medium text-primary hover:underline"
         >
           View Details
